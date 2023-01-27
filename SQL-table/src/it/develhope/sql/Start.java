@@ -17,10 +17,7 @@ public class Start {
             Statement stmt = connection.createStatement();
 
             //Create TABLE
-            String sql = "CREATE TABLE IF NOT EXISTS student " +
-                    "(student_id INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                    " first_name VARCHAR(30), " +
-                    " last_name VARCHAR(30))";
+            String sql = "CREATE TABLE IF NOT EXISTS student " + "(student_id INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY," + " first_name VARCHAR(30), " + " last_name VARCHAR(30))";
             stmt.executeUpdate(sql);
             System.out.println("Tabella creata con successo!");
 
@@ -52,7 +49,7 @@ public class Start {
                 stmt.executeUpdate(addColumnSql);
                 System.out.println("Colonna aggiunta con successo!");
             } else {
-                System.out.println("La colonna country esiste già.");
+                System.out.println("La colonna country esiste già, non verrà creata");
             }
 
             ArrayList<String> surnames = new ArrayList<>();
@@ -76,14 +73,23 @@ public class Start {
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
                 String country = rs.getString("country");
-                System.out.println("Student ID: " + studentId + ", Name: " + firstName + ", Surname: " + lastName + ", Country: " + country);
+                System.out.println("ID Studente " + studentId + ", Nome: " + firstName + ", Cognome: " + lastName + ", Stato: " + country);
                 surnames.add(rs.getString("last_name"));
             }
             System.out.println(surnames);
 
+            //Check&Creation ITA View
+            ResultSet rsCheckITAView = stmt.executeQuery("SELECT COUNT(*) FROM information_schema.views WHERE table_name = 'italian_students'");
+            rsCheckITAView.next();
+            int countITA = rsCheckITAView.getInt(1);
+            if (countITA > 0) {
+                System.out.println("La vista italian_students esiste, non verrà creata");
+            } else {
+                String createViewSqlItalian = "CREATE VIEW italian_students AS SELECT first_name, last_name FROM student WHERE country = 'Italy'";
+                stmt.executeUpdate(createViewSqlItalian);
+                System.out.println("Vista creata con successo");
+            }
             //View Italian_Students & Array
-            //String createViewSqlItalian = "CREATE VIEW italian_students AS SELECT first_name, last_name FROM student WHERE country = 'Italy'";
-            //stmt.executeUpdate(createViewSqlItalian);
             ArrayList<Student> italianStudents = new ArrayList<Student>();
             String selectSqlITA = "SELECT * FROM italian_students";
             ResultSet rsITA = stmt.executeQuery(selectSqlITA);
@@ -99,9 +105,18 @@ public class Start {
                 System.out.println("Nome: " + student.getName() + ", Cognome: " + student.getSurname());
             }
 
-            //View German_Students & Array
-            //String createViewSqlGerman = "CREATE VIEW german_students AS SELECT first_name, last_name FROM student WHERE country = 'Germany'";
-            //stmt.executeUpdate(createViewSqlGerman);
+            //Check&Creation GER View
+            ResultSet rsCheckGERView = stmt.executeQuery("SELECT COUNT(*) FROM information_schema.views WHERE table_name = 'german_students'");
+            rsCheckGERView.next();
+            int countGER = rsCheckGERView.getInt(1);
+            if (countGER > 0) {
+                System.out.println("La vista german_students esiste, non verrà creata");
+            } else {
+                String createViewSqlGerman = "CREATE VIEW german_students AS SELECT first_name, last_name FROM student WHERE country = 'Germany";
+                stmt.executeUpdate(createViewSqlGerman);
+                System.out.println("Vista creata con successo");
+            }
+            //View Germany_Students & Array
             ArrayList<Student> germanStudents = new ArrayList<Student>();
             String selectSqlGER = "SELECT * FROM german_students";
             ResultSet rsGER = stmt.executeQuery(selectSqlGER);
@@ -117,6 +132,7 @@ public class Start {
             }
 
             connection.close();
+            stmt.close();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
