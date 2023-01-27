@@ -81,6 +81,41 @@ public class Start {
             }
             System.out.println(surnames);
 
+            //View Italian_Students & Array
+            //String createViewSqlItalian = "CREATE VIEW italian_students AS SELECT first_name, last_name FROM student WHERE country = 'Italy'";
+            //stmt.executeUpdate(createViewSqlItalian);
+            ArrayList<Student> italianStudents = new ArrayList<Student>();
+            String selectSqlITA = "SELECT * FROM italian_students";
+            ResultSet rsITA = stmt.executeQuery(selectSqlITA);
+
+            while (rsITA.next()) {
+                String firstName = rsITA.getString("first_name");
+                String lastName = rsITA.getString("last_name");
+                Student student = new Student(firstName, lastName);
+                italianStudents.add(student);
+            }
+            System.out.println("Italian Students: ");
+            for (Student student : italianStudents) {
+                System.out.println("Nome: " + student.getName() + ", Cognome: " + student.getSurname());
+            }
+
+            //View German_Students & Array
+            //String createViewSqlGerman = "CREATE VIEW german_students AS SELECT first_name, last_name FROM student WHERE country = 'Germany'";
+            //stmt.executeUpdate(createViewSqlGerman);
+            ArrayList<Student> germanStudents = new ArrayList<Student>();
+            String selectSqlGER = "SELECT * FROM german_students";
+            ResultSet rsGER = stmt.executeQuery(selectSqlGER);
+            while (rsGER.next()) {
+                String firstName = rsGER.getString("first_name");
+                String lastName = rsGER.getString("last_name");
+                Student student = new Student(firstName, lastName);
+                germanStudents.add(student);
+            }
+            System.out.println("German Students: ");
+            for (Student student : germanStudents) {
+                System.out.println("Nome: " + student.getName() + ", Cognome: " + student.getSurname());
+            }
+
             connection.close();
 
         } catch (SQLException e) {
